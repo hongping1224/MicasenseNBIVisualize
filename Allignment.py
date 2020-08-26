@@ -1,0 +1,49 @@
+import numpy as np
+import os, glob
+import micasense.capture as capture
+import micasense.imageutils as imageutils
+import cv2
+
+def ReadAllignmentMatrix(path):
+    return 
+
+def SaveAllignmentMatrix(path, matrix):
+   
+    return
+
+
+def AllignImage(mat, images):
+    if capture.dls_present():
+        img_type='reflectance'
+    else:
+        img_type = "radiance"
+    warp_mode = cv2.MOTION_HOMOGRAPHY
+    match_index = 4
+    cropped_dimensions, edges = imageutils.find_crop_bounds(images, mat, warp_mode=warp_mode)
+    im_aligned = imageutils.aligned_capture(images, mat, warp_mode, cropped_dimensions, match_index, img_type=img_type)
+    return 
+
+def GetAllignmentMatrix(images):
+    ## Alignment settings
+    match_index = 4 # Index of the band, here we use green
+    max_alignment_iterations = 20
+    warp_mode = cv2.MOTION_HOMOGRAPHY # MOTION_HOMOGRAPHY or MOTION_AFFINE. For Altum images only use HOMOGRAPHY
+    pyramid_levels = 3 # for 10-band imagery we use a 3-level pyramid. In some cases
+    warp_matrices, alignment_pairs = imageutils.align_capture(capture,
+                                                          ref_index = match_index,
+                                                          max_iterations = max_alignment_iterations,
+                                                          warp_mode = warp_mode,
+                                                          pyramid_levels = pyramid_levels)
+    return warp_matrices
+
+
+def main():
+    path = ""
+    confPath = ""
+    mat = GetAllignmentMatrix(path)
+    SaveAllignmentMatrix(confPath, mat)
+    return
+
+
+if __name__== "__main__":
+    main()
