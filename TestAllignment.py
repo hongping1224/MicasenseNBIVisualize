@@ -7,9 +7,11 @@ import micasense.imageutils as imageutils
 import os, glob
 from Allignment import AllignImage ,GetAllignmentMatrix,SaveAllignmentMatrix,ReadAllignmentMatrix
 
-def test_Allignment():
+def test_Allignment(i):
     imagePath = os.path.join('.','data','tiff')
-    imageNames = glob.glob(os.path.join(imagePath,'IMG_0168_*.tif'))
+    outrgbPath = os.path.join('.','data','rgb','{:04d}.png'.format(i))
+    outcirPath = os.path.join('.','data','cir','{:04d}.png'.format(i))
+    imageNames = glob.glob(os.path.join(imagePath,'IMG_{:04d}_*.tif'.format(i)))
     panelNames = glob.glob(os.path.join(imagePath,'IMG_0000_*.tif'))
     
     if panelNames is not None:
@@ -46,11 +48,18 @@ def test_Allignment():
     cir = im_display[:,:,cir_band_indices]
     cv2.imshow("rgb",rgb)
     cv2.imshow("cir",cir)
-    cv2.waitKey(0)
+    print(np.max(rgb))
+    print(np.min(rgb))
+    rgb= cv2.normalize(rgb,None,0,255,cv2.NORM_MINMAX,cv2.CV_8UC3)
+    cir= cv2.normalize(cir,None,0,255,cv2.NORM_MINMAX,cv2.CV_8UC3)
+    cv2.imwrite(outrgbPath,rgb)
+    cv2.imwrite(outcirPath,cir)
+    cv2.waitKey(10)
     return
 
 
 if __name__ == "__main__":
-    test_Allignment()
+    for i in range(190,214):
+        test_Allignment(i)
   
    
