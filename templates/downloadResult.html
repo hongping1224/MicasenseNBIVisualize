@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+  <!-- site CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/site.css')}}">
+
+ 
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <h1>CameraSetting</h1>
+      </div>
+    </div>
+    <form method="post" action="/returnResult">
+      <div class="row text-center">
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="ResultTxt">
+          <div class="col-4"></div>
+      </div>
+    </form>
+    </br>
+    <form method="post" action="/returnImage">
+      <div class="row text-center">
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="ResultImage">
+          <div class="col-4"></div>
+      </div>
+    </form>
+    
+
+  <script src="{{url_for('static',filename='js/jquery-3.3.1.slim.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/popper.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"> </script>
+  <script>
+
+    $("#sb").on('click',function(){
+      alert('Update Success');
+    });
+    $("#tarea").change(function(){
+      inputString = $("#tarea").val().split("\n")
+      $('#sb').attr('disabled', false);
+      $("#tarea").css("background-color", "white");
+      }
+    });
+
+  </script>
+</body>
+
+</html>

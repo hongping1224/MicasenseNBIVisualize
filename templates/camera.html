@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+  <!-- site CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/site.css')}}">
+
+  <title>CameraSetting</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <h1>CameraSetting</h1>
+      </div>
+    </div>
+    <form method="post" action="/camera">
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="delayTime">delayTime(s):</label>
+        <input type="text" name="delayTime" value="{{delayTime}}">
+      </div>
+      <div class="row text-center">
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="Update">
+          <div class="col-4"></div>
+      </div>
+    </form>
+    <br />
+    <form method="post" action="/startCamera">
+	      <div class="row text-center">
+	 <div class="form-group row">        
+	  <label class="col-4 text-right" ref="a"></label>
+	</div>
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="Start">
+          <div class="col-4"></div>
+      </div>
+    </form>
+    <br />
+    <form method="post" action="/testCamera">
+	      <div class="row text-center">
+	 <div class="form-group row">        
+	  <label class="col-4 text-right" ref="a"></label>
+	</div>
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="Test">
+          <div class="col-4"></div>
+      </div>
+ <br />
+    </form>
+       <form method="post" action="/StartCaptureMode">
+	      <div class="row text-center">
+	 <div class="form-group row">        
+	  <label class="col-4 text-right" ref="a"></label>
+	</div>
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="Capture">
+          <div class="col-4"></div>
+      </div>
+    </form>
+<br />
+ <form method="post" action="/Reboot">
+	      <div class="row text-center">
+	 <div class="form-group row">        
+	  <label class="col-4 text-right" ref="a"></label>
+	</div>
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="Reboot">
+          <div class="col-4"></div>
+      </div>
+    </form>
+  </div>
+
+  <script src="{{url_for('static',filename='js/jquery-3.3.1.slim.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/popper.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"> </script>
+  <script>
+
+    $("#sb").on('click',function(){
+      alert('Update Success');
+    });
+    $("#tarea").change(function(){
+      inputString = $("#tarea").val().split("\n")
+      $('#sb').attr('disabled', false);
+      $("#tarea").css("background-color", "white");
+      }
+    });
+
+  </script>
+</body>
+
+</html>

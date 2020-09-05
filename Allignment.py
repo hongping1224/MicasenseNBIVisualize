@@ -2,17 +2,19 @@ import numpy as np
 import os, glob
 import micasense.capture as capture
 import micasense.imageutils as imageutils
-from cv2 import cv2
+import cv2
 
 def ReadAllignmentMatrix(path):
     matrix = []
-    matrix_path = glob.glob('./a_mat_*.txt')
+    matrix_path = glob.glob(os.path.join(path,'a_mat_*.txt'))
     matrix_path.sort()
-
+    if len(matrix_path) == 0:
+        return [] , False
     for path in matrix_path:
         try:
             matrix.append(np.loadtxt(path))
         except:
+            print("notfound")
             return [] ,False
     return matrix , True
 
@@ -29,7 +31,7 @@ def AllignImage(mat, images):
         img_type = "radiance"
     warp_mode = cv2.MOTION_HOMOGRAPHY
     match_index = 4
-    cropped_dimensions, edges = imageutils.find_crop_bounds(images, mat, warp_mode=warp_mode)
+    cropped_dimensions, _ = imageutils.find_crop_bounds(images, mat, warp_mode=warp_mode)
     im_aligned = imageutils.aligned_capture(images, mat, warp_mode, cropped_dimensions, match_index, img_type=img_type)
     return im_aligned
 

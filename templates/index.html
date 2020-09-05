@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+  <!-- site CSS -->
+  <link rel="stylesheet" href="{{url_for('static',filename='css/site.css')}}">
+
+  <title>包裝資訊輸入系統</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mt-3">
+        <h1>包裝資訊輸入系統</h1>
+      </div>
+      <div class="col-12 text-center mb-3">
+        <p>↓↓↓請以繁體中文輸入下列資訊↓↓↓</p>
+      </div>
+    </div>
+    <form method="post" action="/">
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="itemName">品名:</label>
+        <input type="text" name="itemName" value="{{itemName}}">
+      </div>
+
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="itemOrigin">產地:</label>
+        <input type="text" name="itemOrigin" value="{{itemOrigin}}">
+      </div>
+
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="exporter">出口商:</label>
+        <textarea id='tarea' name="exporter" aria-label="With textarea"
+                    rows="3" placeholder="每行限7個中文字內，至多3行">{{exporter}}</textarea>
+        <!-- <input type="text" name="exporter" value="{{exporter}}"> -->
+        <!-- placeholder="每行限7個中文字內，至多3行"  -->
+      </div>
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="farmerName">農民:</label>
+        <input type="text" name="farmerName" value="{{farmerName}}">
+      </div>
+
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="itemWeight">重量(kg):</label>
+        <input type="number" name="itemWeight" min="0" inputmode="numeric" pattern="[0-9]*" value="{{itemWeight}}">
+      </div>
+
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="packedDate">日期:</label>
+        <input type="date" name="packedDate" value="{{packedDate}}">
+      </div>
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="fontType">輸出字體:</label>
+        <select name="fontType">
+            {%for i in range(0, len)%} 
+            <li>{{Pokemons[i]}}</li> 
+            {%endfor%} 
+          　<option value="zhTw" {{fontTypeTw}}>繁體中文</option>
+          　<option value="zhCn" {{fontTypeCn}}>简体中文</option>
+          </select>
+      </div>
+      <div class="form-group row">
+        <label class="col-4 text-right" ref="boxing">裝箱方法:</label>
+        <select name="boxing">
+          　<option value="down" {{downbox}}>躺箱</option>
+          　<option value="up" {{upbox}}>立箱</option>
+          </select>
+      </div>
+
+      <div class="row text-center">
+          <div class="col-4"></div>
+          <input class="col-4 text-center pt-2 pb-2 btn btn-success" id="sb" type="submit" value="更新資訊">
+          <div class="col-4"></div>
+      </div>
+    </form>
+
+  </div>
+
+  <script src="{{url_for('static',filename='js/jquery-3.3.1.slim.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/popper.min.js')}}"> </script>
+  <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"> </script>
+  <script>
+
+    $("#sb").on('click',function(){
+      alert('更新資訊成功');
+    });
+    $("#tarea").change(function(){
+      inputString = $("#tarea").val().split("\n")
+      $('#sb').attr('disabled', false);
+      $("#tarea").css("background-color", "white");
+      if(inputString.length>3){
+        $('#sb').attr('disabled', true);
+        $("#tarea").css("background-color", "pink");
+        alert("出口商文字不可超過3行，請修正")
+      }
+      for (index = 0; index < inputString.length; index++) {
+        if(inputString[index].replace(/[^\x00-\xff]/g,"xx").length>14){
+          $('#sb').attr('disabled', true);
+          $("#tarea").css("background-color", "pink");
+          alert("每行字數不可超過7個中文字或14個英文字，請修正")
+        }
+      }
+    });
+
+  </script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 import pytest
-from cv2 import cv2
+import cv2
 from NBI import CalNBI
 import numpy as np
 import micasense.capture as cap
@@ -8,24 +8,18 @@ import os, glob
 from Allignment import AllignImage ,GetAllignmentMatrix,SaveAllignmentMatrix,ReadAllignmentMatrix
 
 def test_Allignment(i):
-    imagePath = os.path.join('.','data','tiff')
+    imagePath = os.path.join('.','img')
     outrgbPath = os.path.join('.','data','rgb','{:04d}.png'.format(i))
     outcirPath = os.path.join('.','data','cir','{:04d}.png'.format(i))
     imageNames = glob.glob(os.path.join(imagePath,'IMG_{:04d}_*.tif'.format(i)))
     panelNames = glob.glob(os.path.join(imagePath,'IMG_0000_*.tif'))
-    
-    if panelNames is not None:
-        panelCap = cap.Capture.from_filelist(panelNames)
-    else:
+    print(imageNames)
+    if len(panelNames) == 0:
         panelCap = None
+    else:
+        panelCap = cap.Capture.from_filelist(panelNames)
     capture = cap.Capture.from_filelist(imageNames)
-    if panelCap is not None:
-        if panelCap.panel_albedo() is not None:
-            panel_reflectance_by_band = panelCap.panel_albedo()
-        else:
-            panel_reflectance_by_band = [0.65]*len(imageNames)
-        panel_irradiance = panelCap.panel_irradiance(panel_reflectance_by_band)    
-        img_type = "reflectance"
+    
     allignmat, havePrev = ReadAllignmentMatrix(".")
     if havePrev == False:
         allignmat=GetAllignmentMatrix(capture)
@@ -59,7 +53,8 @@ def test_Allignment(i):
 
 
 if __name__ == "__main__":
-    for i in range(190,214):
-        test_Allignment(i)
+    for i in range(32,39):
+        print(i)
+        test_Allignment(i)o
   
    

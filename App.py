@@ -1,35 +1,147 @@
 from Allignment import ReadAllignmentMatrix,AllignImage
 from NBI import CalNBI
-from flask import Flask
-app = Flask(__name__)
+import os
+import json
+import requests
+import time
+import glob
+from threading import Thread
+import micasense.capture as cap
+import numpy as np
+import cv2
+IMGROOT = "./img"
+import subprocess
 
-def Serve(mat,ip):
+
+
+
+
+def Serve(mat,ip,screensize = (1920,1080)):
+    cache = {}
+    allignmat, havePrev = ReadAllignmentMatrix(".")
+    if havePrev == False:
+        print('Please do Allignment First')
+        return 
     while(True):
-        images,new = ReadImage(ip)
+        url,filename,new = ReadImage(ip,cache)
         if new ==True :
-            alligned = AllignImage(mat,images)
-            nbi = CalNBI(alligned)
-            ShowImage(nbi)
+            cache[url] = True
+            paths = DownloadImage(url,filename)
+            capture = cap.Capture.from_filelist(paths)
+            im_aligned = AllignImage(allignmat,capture)
+            nbi,mask = CalNBI(im_aligned)
+            ShowImage(nbi,mask,screensize)
+        else:
+            time.sleep(0.001)
     return
 
-def ReadImage(ip):
-    return None, False
 
-def ShowImage(image):
-    return
+
+def getrequest(request):
+    ret = requests.get(request) 
+    return ret.content
+
+def DownloadImage(url,files):
+    global IMGROOT
+    threads = []
+
+    for i in range(5):
+        if not os.path.exists(IMGROOT):
+            os.makedirs(IMGROOT)
+        path = os.path.join(IMGROOT,files.format(i+1))
+        t = Thread(target=download,args=(url.format(i+1),path))
+        threads.append(t)
+
+    # Start all threads
+    for x in threads:
+        x.start()
+
+    # Wait for all of them to finish
+    for x in threads:
+        x.join()
+        
+    return glob.glob(os.path.join(IMGROOT,files.replace('{}','*')))
+
+def download(url,path):
+    #print(url, path)
+    myfile= requests.get(url)
+    with open(path,'wb') as f:
+        f.write(myfile.content)
+
+def ReadImage(ip,cache):
+    base_url = ip+"/files"
+    sets = json.loads(getrequest(base_url))["directories"]
+    if sets == None:
+        return None,None,False
+    sets_len = len(sets)
+    if sets_len == 0 :
+        return None,None,False
+    sets_url=base_url+"/"+sets[sets_len-1]
+    #print(sets_url)
+    folders = json.loads(getrequest(sets_url))["directories"]
+    folders_len = len(folders)
+    if folders_len == 0 :
+        return None,None,False
+    folders_url = sets_url+"/"+folders[folders_len-1]
+    #print(folders_url)
+    files = json.loads(getrequest(folders_url))["files"]
+    files_len = len(files)
+    offset = 1
+    suffix = "_5.tif"
+    while(files_len-offset >=0): 
+        if files[files_len-offset]["name"].endswith(suffix):
+            filename = files[files_len-offset]["name"]
+            filename = filename.replace(suffix,'') +"_{}.tif"
+            files_url = folders_url+"/"+filename
+            if cache.get(files_url,None) == None:
+                return files_url,filename, True
+        offset = offset+1
+    return None,None ,False
+
+
+
+
+def ShowImage(NBI,mask,size):
+    min = -1.5
+    max = 1.5
+    lower = NBI < min
+    NBI[lower] = min
+    del lower
+    higher = NBI >max
+    NBI[higher] = max    
+    del higher
+    NBI = ((NBI - min)/(max-min)) * 255.0
+    NBI = NBI.astype(np.uint8)
+    im_color = cv2.applyColorMap(NBI, cv2.COLORMAP_JET)
+    del NBI
+    im_color[mask] = [0,0,0]
+    del mask
+    cv2.imshow('NBI',cv2.resize(im_color,size,interpolation=cv2.INTER_NEAREST))
+    #cv2.imshow('NBI',im_color)
+    cv2.waitKey(1)
+    return im_color
+
+def get_screen_resolution():
+    output = subprocess.Popen('xrandr | grep "\*" | cut -d" " -f4',shell=True, stdout=subprocess.PIPE).communicate()[0]
+    resolution = output.split()[0].split(b'x')
+    return {'width': resolution[0], 'height': resolution[1]}
+def InitDisplay():
+    cv2.namedWindow("NBI", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("NBI",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
 def main():
-    confPath = ""
-    cameraIP= ""
-    Amat = ReadAllignmentMatrix(confPath)
-    Serve(Amat,cameraIP)
+    cameraIP= "http://192.168.11.20" 
+    Amat = ReadAllignmentMatrix('.')
+    screensize = get_screen_resolution()
+    InitDisplay()
+    size =(1280,720)
+    try:
+        size = (int(screensize['width']),int(screensize['height']))
+    except:
+        print("Fail to Automatic get screen size, set resolution to 1280x720")
+    Serve(Amat,cameraIP,screensize=size)
     return 
 
-@app.route('/')
-def index():
-    return 'Hello World!'
-
+    
 if __name__ == '__main__':
-    app.debug = True
-    app.run('0.0.0.0')
-
+    main()
