@@ -9,21 +9,22 @@ from threading import Thread
 import micasense.capture as cap
 import numpy as np
 import cv2
-IMGROOT = "./img"
+import argparse
 import subprocess
 
-
-
-
-
+IMGROOT = "./img"
+Running = True
 def Serve(mat,ip,screensize = (1920,1080)):
+    global Running
     cache = {}
     allignmat, havePrev = ReadAllignmentMatrix(".")
     if havePrev == False:
         print('Please do Allignment First')
         return 
-    while(True):
+    while(Running):
+        print('running')
         url,filename,new = ReadImage(ip,cache)
+        print('new', new)
         if new ==True :
             cache[url] = True
             paths = DownloadImage(url,filename)
@@ -33,9 +34,14 @@ def Serve(mat,ip,screensize = (1920,1080)):
             ShowImage(nbi,mask,screensize)
         else:
             time.sleep(0.001)
+    print("Stoping NBI Program")
+    cv2.destroyAllWindows()
     return
 
 
+def Stop():
+    global Running
+    Running = False
 
 def getrequest(request):
     ret = requests.get(request) 
@@ -81,6 +87,7 @@ def ReadImage(ip,cache):
     folders = json.loads(getrequest(sets_url))["directories"]
     folders_len = len(folders)
     if folders_len == 0 :
+        print(folders_len)
         return None,None,False
     folders_url = sets_url+"/"+folders[folders_len-1]
     #print(folders_url)
@@ -130,7 +137,15 @@ def InitDisplay():
     cv2.setWindowProperty("NBI",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
 def main():
-    cameraIP= "http://192.168.11.20" 
+    global Running
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", help="cameraIP")
+    args = parser.parse_args()
+    if args.ip:
+        ip=args.ip
+    else:
+        ip = '192.168.11.20'
+    cameraIP= "http://"+ip 
     Amat = ReadAllignmentMatrix('.')
     screensize = get_screen_resolution()
     InitDisplay()
@@ -139,6 +154,7 @@ def main():
         size = (int(screensize['width']),int(screensize['height']))
     except:
         print("Fail to Automatic get screen size, set resolution to 1280x720")
+    Running = True
     Serve(Amat,cameraIP,screensize=size)
     return 
 

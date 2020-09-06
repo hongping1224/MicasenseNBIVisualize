@@ -44,6 +44,7 @@ def test_Allignment(i):
     cv2.imshow("cir",cir)
     print(np.max(rgb))
     print(np.min(rgb))
+    
     rgb= cv2.normalize(rgb,None,0,255,cv2.NORM_MINMAX,cv2.CV_8UC3)
     cir= cv2.normalize(cir,None,0,255,cv2.NORM_MINMAX,cv2.CV_8UC3)
     cv2.imwrite(outrgbPath,rgb)
@@ -53,8 +54,8 @@ def test_Allignment(i):
 
 
 if __name__ == "__main__":
-    for i in range(32,39):
+    for i in range(1202,1209):
         print(i)
-        test_Allignment(i)o
+        test_Allignment(i)
   
    

@@ -1,6 +1,6 @@
 import numpy as np
 import os, glob
-import micasense.capture as capture
+import micasense.capture as cap
 import micasense.imageutils as imageutils
 import cv2
 
@@ -24,6 +24,27 @@ def SaveAllignmentMatrix(path, matrix):
     return
 
 
+def AutoAllign():
+    result = glob.glob("./img/*_5.tif")
+    suffix = "_5.tif"
+    files = []
+    for f in result:
+        filename = f.replace(suffix,"_*.tif")
+        files.append(filename)
+    files.sort()  
+    print("Allign")
+    for i in range(len(files)):
+        try:
+            print(i)
+            result = glob.glob(files[len(files)-(i+1)])     
+            capture = cap.Capture.from_filelist(result)
+            mat = GetAllignmentMatrix(capture)
+            SaveAllignmentMatrix("a_mat_{}.txt",mat)
+            break   
+        except :
+            continue
+    return
+
 def AllignImage(mat, images):
     if images.dls_present():
         img_type='reflectance'
@@ -41,11 +62,13 @@ def GetAllignmentMatrix(images):
     max_alignment_iterations = 20
     warp_mode = cv2.MOTION_HOMOGRAPHY # MOTION_HOMOGRAPHY or MOTION_AFFINE. For Altum images only use HOMOGRAPHY
     pyramid_levels = 3 # for 10-band imagery we use a 3-level pyramid. In some cases
+    print("Calculating")
     warp_matrices, alignment_pairs = imageutils.align_capture(images,
                                                           ref_index = match_index,
                                                           max_iterations = max_alignment_iterations,
                                                           warp_mode = warp_mode,
                                                           pyramid_levels = pyramid_levels)
+    print("Done")
     return warp_matrices
 
 
