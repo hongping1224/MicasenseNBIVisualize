@@ -128,9 +128,10 @@ def ShowImage(NBI,mask,size):
     del NBI
     im_color[mask] = [0,0,0]
     del mask
-    cv2.imshow('NBI',cv2.resize(im_color,size,interpolation=cv2.INTER_NEAREST))
+    resize = cv2.resize(im_color,size,interpolation=cv2.INTER_NEAREST)
+    cv2.imshow('NBI',resize)
     #cv2.imshow('NBI',im_color)
-    cv2.waitKey(1)
+    cv2.waitKey(50)
     return im_color
 
 def get_screen_resolution():

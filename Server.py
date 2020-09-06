@@ -47,7 +47,7 @@ def StartApp():
     if NBIProgramThread is None:
         try:
             ip = ReadCameraIP()
-            ReadImage(ip,{})
+            ReadImage("http://"+ip,{})
         except:
             return "Fail To Connect To CAMERA! Please Check cable connection and IP is correct" ,200
         t = openTerminal()
@@ -77,7 +77,7 @@ def ClearStorage():
 
 def openTerminal():
     ip = ReadCameraIP()
-    t = Thread(target=main,args=(ip))
+    t = Thread(target=main,args=(ip,))
     t.start()
     return t
 
