@@ -21,6 +21,7 @@ def Serve(mat,ip,screensize = (1920,1080)):
     if havePrev == False:
         print('Please do Allignment First')
         return 
+    newestIMG = -1
     while(Running):
         print('running')
         url,filename,new = ReadImage(ip,cache)
@@ -28,6 +29,10 @@ def Serve(mat,ip,screensize = (1920,1080)):
         if new ==True :
             cache[url] = True
             paths = DownloadImage(url,filename)
+            s = int(os.path.basename(paths[0]).split("_")[1])
+            if s <= newestIMG:
+                continue
+            newestIMG = s
             capture = cap.Capture.from_filelist(paths)
             im_aligned = AllignImage(allignmat,capture)
             nbi,mask = CalNBI(im_aligned)
