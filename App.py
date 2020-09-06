@@ -141,16 +141,10 @@ def InitDisplay():
     cv2.namedWindow("NBI", cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty("NBI",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
 
-def main():
+def main(ip):
     global Running
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", help="cameraIP")
-    args = parser.parse_args()
-    if args.ip:
-        ip=args.ip
-    else:
-        ip = '192.168.11.20'
     cameraIP= "http://"+ip 
+    
     Amat = ReadAllignmentMatrix('.')
     screensize = get_screen_resolution()
     InitDisplay()

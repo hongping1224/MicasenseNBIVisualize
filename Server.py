@@ -3,7 +3,7 @@ app = Flask(__name__)
 import subprocess
 import os
 from threading import Thread
-from App import main,Stop
+from App import main,Stop,ReadImage
 import glob
 from Allignment import AutoAllign
 from ProcessToUSB import Start, stats
@@ -45,6 +45,11 @@ NBIProgramThread = None
 def StartApp():
     global NBIProgramThread
     if NBIProgramThread is None:
+        try:
+            ip = ReadCameraIP()
+            ReadImage(ip,{})
+        except:
+            return "Fail To Connect To CAMERA! Please Check cable connection and IP is correct" ,200
         t = openTerminal()
         NBIProgramThread = t
     return redirect('/')
@@ -71,7 +76,8 @@ def ClearStorage():
 
 
 def openTerminal():
-    t = Thread(target=main)
+    ip = ReadCameraIP()
+    t = Thread(target=main,args=(ip))
     t.start()
     return t
 
@@ -121,6 +127,6 @@ def ReadCameraIP():
 
 if __name__ == '__main__':
     
-    app.debug = True
+    app.debug = False
     app.run('0.0.0.0')
 
