@@ -26,6 +26,24 @@ def CalNBI(im_aligned):
     return NBI, NDVIMASK
 
 
+def DrawLegend(img):
+    a = np.arange(255,dtype=np.uint8)
+    a = np.flip(a)
+    a = cv2.resize(a,(1,301),interpolation= cv2.INTER_NEAREST)
+    t = np.zeros((301,30))
+    t[:] = a
+    #t = np.transpose(t)
+    t  = t.astype(np.uint8)
+    print(t)
+    t = cv2.applyColorMap(t, cv2.COLORMAP_JET)
+    img = cv2.rectangle(img, (40, 115), (80, 426), (255, 255, 255), -1)
+    img[120:421, 45:75] = t
+    cv2.putText(img, "Low Nitrogen", (40, 90), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, "1.5", (100, 130), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, "0", (100, 275), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, "-1.5", (100, 426), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, "High Nitrogen", (40, 480), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 255, 255), 2, cv2.LINE_AA)
+    return img
 
 def Calall(im_aligned):
     global kernel

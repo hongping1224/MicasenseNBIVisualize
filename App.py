@@ -1,5 +1,5 @@
 from Allignment import ReadAllignmentMatrix,AllignImage
-from NBI import CalNBI
+from NBI import CalNBI , DrawLegend
 import os
 import json
 import requests
@@ -127,7 +127,9 @@ def ShowImage(NBI,mask,size):
     im_color = cv2.applyColorMap(NBI, cv2.COLORMAP_JET)
     del NBI
     im_color[mask] = [0,0,0]
+    im_color = DrawLegend(im_color)
     del mask
+
     resize = cv2.resize(im_color,size,interpolation=cv2.INTER_NEAREST)
     cv2.imshow('NBI',resize)
     #cv2.imshow('NBI',im_color)

@@ -1,11 +1,18 @@
 import pytest
-from cv2 import cv2
-from NBI import CalNBI
+import cv2
+from NBI import CalNBI,DrawLegend
 import numpy as np
 import micasense.capture as cap
 import micasense.imageutils as imageutils
 import os, glob
 from Allignment import AllignImage ,ReadAllignmentMatrix
+
+def TestLegend():
+    img = np.zeros((760,1280,3),dtype=np.uint8)
+    img = DrawLegend(img)
+    cv2.imshow('legend',img)
+    cv2.waitKey(0)
+    return
 
 def test_NBI(i):
     imagePath = os.path.join('.','data','tiff')
@@ -30,10 +37,13 @@ def test_NBI(i):
     #cv2.imshow('normalize',im_color)
     #cv2.waitKey(10)
     im_color[ndvimask] = [0,0,0]
+    DrawLegend(im_color)
     cv2.imwrite(outPath,im_color)
     return
 
 
 if __name__ == "__main__":
-    for i in range(168,370):
-        test_NBI(i)
+    TestLegend()
+    
+    #for i in range(168,370):
+    #    test_NBI(i)
