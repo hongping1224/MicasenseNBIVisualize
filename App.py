@@ -23,9 +23,7 @@ def Serve(mat,ip,screensize = (1920,1080)):
         return 
     newestIMG = -1
     while(Running):
-        print('running')
         url,filename,new = ReadImage(ip,cache)
-        print('new', new)
         if new ==True :
             cache[url] = True
             paths = DownloadImage(url,filename)
@@ -35,8 +33,13 @@ def Serve(mat,ip,screensize = (1920,1080)):
             newestIMG = s
             capture = cap.Capture.from_filelist(paths)
             im_aligned = AllignImage(allignmat,capture)
+            capture.clear_image_data()
+            capture =None
             nbi,mask = CalNBI(im_aligned)
+            del im_aligned
             ShowImage(nbi,mask,screensize)
+            del nbi 
+            del mask
         else:
             time.sleep(0.001)
     print("Stoping NBI Program")
@@ -110,10 +113,8 @@ def ReadImage(ip,cache):
         offset = offset+1
     return None,None ,False
 
-
-
-
 def ShowImage(NBI,mask,size):
+    global im_color_cache
     min = -1.5
     max = 1.5
     lower = NBI < min
@@ -125,10 +126,8 @@ def ShowImage(NBI,mask,size):
     NBI = ((NBI - min)/(max-min)) * 255.0
     NBI = NBI.astype(np.uint8)
     im_color = cv2.applyColorMap(NBI, cv2.COLORMAP_JET)
-    del NBI
     im_color[mask] = [0,0,0]
     im_color = DrawLegend(im_color)
-    del mask
 
     resize = cv2.resize(im_color,size,interpolation=cv2.INTER_NEAREST)
     cv2.imshow('NBI',resize)
