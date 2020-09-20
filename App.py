@@ -30,16 +30,20 @@ def Serve(mat,ip,screensize = (1920,1080)):
             s = int(os.path.basename(paths[0]).split("_")[1])
             if s <= newestIMG:
                 continue
-            newestIMG = s
-            capture = cap.Capture.from_filelist(paths)
-            im_aligned = AllignImage(allignmat,capture)
-            capture.clear_image_data()
-            capture =None
-            nbi,mask = CalNBI(im_aligned)
-            del im_aligned
-            ShowImage(nbi,mask,screensize)
-            del nbi 
-            del mask
+            try:
+                capture = cap.Capture.from_filelist(paths)
+                newestIMG = s
+                im_aligned = AllignImage(allignmat,capture)
+                capture.clear_image_data()
+                capture =None
+                nbi,mask = CalNBI(im_aligned)
+                del im_aligned
+                ShowImage(nbi,mask,screensize)
+                del nbi 
+                del mask
+            except:
+                time.sleep(0.001)
+
         else:
             time.sleep(0.001)
     print("Stoping NBI Program")
