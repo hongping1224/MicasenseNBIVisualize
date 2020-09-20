@@ -23,9 +23,9 @@ def Serve(mat,ip,screensize = (1920,1080)):
         return 
     newestIMG = -1
     while(Running):
-        url,filename,new = ReadImage(ip,cache)
-        if new ==True :
-            try:
+        try:
+            url,filename,new = ReadImage(ip,cache)
+            if new ==True :
                 cache[url] = True
                 paths = DownloadImage(url,filename)
                 s = int(os.path.basename(paths[0]).split("_")[1])
@@ -41,10 +41,9 @@ def Serve(mat,ip,screensize = (1920,1080)):
                 ShowImage(nbi,mask,screensize)
                 del nbi 
                 del mask
-            except:
+            else:
                 time.sleep(0.001)
-
-        else:
+        except:
             time.sleep(0.001)
     print("Stoping NBI Program")
     cv2.destroyAllWindows()
