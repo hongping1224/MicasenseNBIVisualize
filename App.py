@@ -25,12 +25,12 @@ def Serve(mat,ip,screensize = (1920,1080)):
     while(Running):
         url,filename,new = ReadImage(ip,cache)
         if new ==True :
-            cache[url] = True
-            paths = DownloadImage(url,filename)
-            s = int(os.path.basename(paths[0]).split("_")[1])
-            if s <= newestIMG:
-                continue
             try:
+                cache[url] = True
+                paths = DownloadImage(url,filename)
+                s = int(os.path.basename(paths[0]).split("_")[1])
+                if s <= newestIMG:
+                    continue
                 capture = cap.Capture.from_filelist(paths)
                 newestIMG = s
                 im_aligned = AllignImage(allignmat,capture)
