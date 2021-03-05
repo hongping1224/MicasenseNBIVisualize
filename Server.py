@@ -66,7 +66,6 @@ def StopApp():
     return redirect('/')
 
 
-
 @app.route('/ClearStorage', methods=['GET'])
 def ClearStorage():
     files = glob.glob("./img/*")
@@ -90,7 +89,6 @@ def GetUSBPath():
             continue
         result.append(os.path.join("/media/nuc",r.decode("utf-8") ))
     return result
-
 
 
 @app.route('/SaveToUSB', methods=['POST'])
